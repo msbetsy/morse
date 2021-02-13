@@ -35,6 +35,18 @@ characters_in_morse = {
     "ż": "--..-.",
     "ź": "--..-",
 
+    "ö": "---.",
+    chr(223): "...--..",  # ß
+    "ä": ".-.-",
+    "æ": ".-.-",
+    "à": ".--.-",
+    "å": ".--.-",
+    "ü": "..--",
+    "ĉ": "-.-..",
+    "ç": "-.-..",
+    "è": ".-..-",
+    "é": "..-..",
+
     "1": ".----",
     "2": "..---",
     "3": "...--",
@@ -62,6 +74,58 @@ characters_in_morse = {
     ")": "-.--.-",
     "=": "-...-",
     "@": ".--.-.",
+    "&": ".-...",
+    "$": "...-..-",
 
     " ": "/",
+}
+
+languages_words = {
+    'EN': {
+        'title': 'Convert text to Morse code',
+        'your_text': 'Type your text',
+        'morse_message': "Your message in Morse",
+        'load_file': 'Load file',
+        'convert': 'Apply',
+        'copy_text': 'Copy',
+        'save': 'Save',
+        'save_in_direction': 'Save file',
+        'load_from_direction': 'Load file'
+    },
+    'PL': {
+        'title': 'Przetłumacz tekst na Morse\'a',
+        'your_text': 'Tekst do tłumaczenia',
+        'morse_message': "Twoja wiadomość",
+        'load_file': 'Załaduj plik',
+        'convert': 'Przetłumacz',
+        'copy_text': 'Skopiuj',
+        'save': 'Zapisz',
+        'save_in_direction': 'Zapisz plik',
+        'load_from_direction': 'Otwórz plik'
+
+    },
+    'FRE': {
+        'title': 'Traduire un texte en Morse',
+        'your_text': 'Votre text',
+        'morse_message': "Votre message",
+        'load_file': 'Chargez un fichier',
+        'convert': 'Traduire ',
+        'copy_text': 'Copier',
+        'save': 'Enregistrer ',
+        'save_in_direction': 'Enregistrer un document',
+        'load_from_direction': 'Ouvrir un fichier'
+
+    },
+    'GER': {
+        'title': 'Übersetzen Sie Text in Morsecode',
+        'your_text': 'dein Text',
+        'morse_message': "Deine Nachricht",
+        'load_file': 'lade Datei',
+        'convert': 'Übersetzen',
+        'copy_text': 'Kopieren',
+        'save': 'speichern',
+        'save_in_direction': 'speichern als',
+        'load_from_direction': 'Datei öffnen'
+
+    }
 }

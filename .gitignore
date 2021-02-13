@@ -12,3 +12,4 @@ pythonenv*
 __pycache__/
 .idea/
 venv/
+check.py
