@@ -19,7 +19,7 @@ class MorseInterface:
         self.window = Tk()
         self.window.title("Fun with Morse")
         self.window.geometry("1000x700")
-        self.window.config(padx=40, pady=30, bg=BG_COLOUR)
+        self.window.config(padx=40, pady=20, bg=BG_COLOUR)
 
         img_en = Image.open("./images/united_kingdom.png").resize((WIDTH_FLAG, HEIGHT_FLAG))
         img_pl = Image.open("./images/poland.png").resize((WIDTH_FLAG, HEIGHT_FLAG))
@@ -43,39 +43,39 @@ class MorseInterface:
         self.button_ger.place(x=900, y=0)
 
         self.title_label = Label(self.window, text=self.language.title, bg=BG_COLOUR, fg=FG_COLOUR,
-                                 font=("verdana", 35, "bold"), pady=20)
-        self.title_label.grid(column=0, row=0, columnspan=3)
+                                 font=("verdana", 35, "bold"), pady=30)
+        self.title_label.place(x=100, y=20)
 
         self.input_label = Label(self.window, text=self.language.your_text, fg=BG_ENTRY_COLOUR,
-                                 bg=BG_COLOUR, font=('verdana', 12))
-        self.input_label.grid(column=0, row=1)
+                                 justify='left', bg=BG_COLOUR, font=('verdana', 12, 'bold'))
+        self.input_label.place(x=0, y=190)
 
-        self.input_entry = Text(self.window, font=('verdana', 12), height=5, width=50, bg=BG_ENTRY_COLOUR,
+        self.input_entry = Text(self.window, font=('verdana', 12), height=10, width=60, bg=BG_ENTRY_COLOUR,
                                 cursor="pencil")
-        self.input_entry.grid(column=1, row=1)
+        self.input_entry.place(x=110, y=130)
 
         self.load_text_button = Button(self.window, text=self.language.load_file, font=('verdana', 15),
-                                       command=self.load_file)
-        self.load_text_button.place(x=735, y=100)
+                                       justify='center', width=10, command=self.load_file)
+        self.load_text_button.place(x=750, y=160)
 
         self.apply_button = Button(self.window, text=self.language.convert, font=('verdana', 15),
-                                   command=self.convert_text_to_morse)
-        self.apply_button.place(x=750, y=150)
+                                   justify='center', width=10, command=self.convert_text_to_morse)
+        self.apply_button.place(x=750, y=220)
 
         self.output_label = Label(self.window, text=self.language.morse_message, fg=BG_ENTRY_COLOUR,
-                                  bg=BG_COLOUR, font=('verdana', 12))
-        self.output_label.grid(column=0, row=3)
+                                  justify='left', bg=BG_COLOUR, font=('verdana', 12, 'bold'))
+        self.output_label.place(x=0, y=390)
 
-        self.output = Text(self.window, font=('verdana', 12), width=50, bg=BG_ENTRY_COLOUR)
-        self.output.grid(column=1, row=3)
+        self.output = Text(self.window, font=('verdana', 12), height=10, width=60, bg=BG_ENTRY_COLOUR)
+        self.output.place(x=110, y=330)
 
         self.copy_button = Button(self.window, text=self.language.copy_text, font=('verdana', 15),
-                                  command=self.copy_text_to_clipboard)
-        self.copy_button.place(x=750, y=300)
+                                  justify='center', width=10, command=self.copy_text_to_clipboard)
+        self.copy_button.place(x=750, y=350)
 
         self.save_button = Button(self.window, text=self.language.save, font=('verdana', 15),
-                                  command=self.save_text_in_morse)
-        self.save_button.place(x=750, y=400)
+                                  justify='center', width=10, command=self.save_text_in_morse)
+        self.save_button.place(x=750, y=410)
 
         self.window.mainloop()
 

@@ -82,50 +82,50 @@ characters_in_morse = {
 
 languages_words = {
     'EN': {
-        'title': 'Convert text to Morse code',
-        'your_text': 'Type your text',
-        'morse_message': "Your message in Morse",
-        'load_file': 'Load file',
-        'convert': 'Apply',
+        'title': 'Morse code translator',
+        'your_text': 'Your \ntext',
+        'morse_message': "Your \nmessage",
+        'load_file': 'Open',
+        'convert': 'Translate',
         'copy_text': 'Copy',
         'save': 'Save',
-        'save_in_direction': 'Save file',
-        'load_from_direction': 'Load file'
+        'save_in_direction': 'Save as',
+        'load_from_direction': 'Open file'
     },
     'PL': {
-        'title': 'Przetłumacz tekst na Morse\'a',
-        'your_text': 'Tekst do tłumaczenia',
-        'morse_message': "Twoja wiadomość",
-        'load_file': 'Załaduj plik',
+        'title': 'Translator Morse\'a',
+        'your_text': 'Twój \ntekst',
+        'morse_message': "Twoja \nwiadomość",
+        'load_file': 'Otwórz',
         'convert': 'Przetłumacz',
-        'copy_text': 'Skopiuj',
+        'copy_text': 'Kopiuj',
         'save': 'Zapisz',
-        'save_in_direction': 'Zapisz plik',
-        'load_from_direction': 'Otwórz plik'
+        'save_in_direction': 'Zapisz jako',
+        'load_from_direction': 'Otwieranie'
 
     },
     'FRE': {
-        'title': 'Traduire un texte en Morse',
-        'your_text': 'Votre text',
-        'morse_message': "Votre message",
-        'load_file': 'Chargez un fichier',
+        'title': 'Traducteur de Morse',
+        'your_text': 'Votre \ntext',
+        'morse_message': "Votre \nmessage",
+        'load_file': 'Ouvrir',
         'convert': 'Traduire ',
         'copy_text': 'Copier',
         'save': 'Enregistrer ',
-        'save_in_direction': 'Enregistrer un document',
+        'save_in_direction': 'Enregistrer sous',
         'load_from_direction': 'Ouvrir un fichier'
 
     },
     'GER': {
-        'title': 'Übersetzen Sie Text in Morsecode',
-        'your_text': 'dein Text',
-        'morse_message': "Deine Nachricht",
-        'load_file': 'lade Datei',
+        'title': 'Morse-Code Übersetzer',
+        'your_text': 'Dein \ntext',
+        'morse_message': "Morse \ncode",
+        'load_file': 'Öffnen',
         'convert': 'Übersetzen',
         'copy_text': 'Kopieren',
-        'save': 'speichern',
-        'save_in_direction': 'speichern als',
-        'load_from_direction': 'Datei öffnen'
+        'save': 'Speichern',
+        'save_in_direction': 'Speichern unter',
+        'load_from_direction': 'Öffnen'
 
     }
 }
