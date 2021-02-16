@@ -3,6 +3,7 @@ from tkinter.filedialog import asksaveasfile, askopenfile
 from data import characters_in_morse
 from languages import LanguageManager
 from PIL import Image, ImageTk
+from sound import SoundManager
 
 BG_COLOUR = "#0F3057"
 FG_COLOUR = "#008891"
@@ -15,6 +16,7 @@ class MorseInterface:
     def __init__(self):
 
         self.language = LanguageManager()
+        self.sound = SoundManager()
 
         self.window = Tk()
         self.window.title("Fun with Morse")
@@ -77,6 +79,30 @@ class MorseInterface:
                                   justify='center', width=10, command=self.save_text_in_morse)
         self.save_button.place(x=750, y=410)
 
+        self.play_button = Button(self.window, text="play", font=('verdana', 15),
+                                  justify='center', width=10, command=self.morse_text_to_soud)
+        self.play_button.place(x=460, y=560)
+
+        self.frequency_label = Label(self.window, text="Frequency", fg=BG_ENTRY_COLOUR,
+                                     justify='left', bg=BG_COLOUR, font=('verdana', 12, 'bold'))
+        self.frequency_label.place(x=110, y=530)
+
+        self.frequency_scale = Scale(self.window, orient="horizontal", bg=FG_COLOUR, from_=400,
+                                     to=900, resolution=50, sliderlength=20, length=150,
+                                     fg=BG_ENTRY_COLOUR, font=('verdana', 10, 'bold'))
+        self.frequency_scale.place(x=110, y=560)
+        self.frequency_scale.set(self.sound.frequency)
+
+        self.speed_label = Label(self.window, text="Speed", fg=BG_ENTRY_COLOUR,
+                                 justify='left', bg=BG_COLOUR, font=('verdana', 12, 'bold'))
+        self.speed_label.place(x=300, y=530)
+
+        self.speed_scale = Scale(self.window, orient="horizontal", bg=FG_COLOUR, from_=0.5,
+                                 to=2, resolution=0.5, sliderlength=20, length=100,
+                                 fg=BG_ENTRY_COLOUR, font=('verdana', 10, 'bold'))
+        self.speed_scale.set(1.0)
+        self.speed_scale.place(x=300, y=560)
+
         self.window.mainloop()
 
     def convert_text_to_morse(self):
@@ -134,3 +160,27 @@ class MorseInterface:
     def change_to_ger(self):
         self.language.chosen_language('GER')
         self.change_program_language()
+
+    def morse_text_to_soud(self):
+        sound_speed = self.speed_scale.get()
+        normal_speed = self.sound.duration
+        self.sound.duration = int(self.sound.duration // sound_speed)
+        freq = self.frequency_scale.get()
+        self.sound.frequency = freq
+        text = self.output.get("1.0", END)
+        self.play_morse(text)
+        self.sound.duration = normal_speed
+
+    def play_morse(self, morse_text):
+        for char in morse_text:
+            if char == ".":
+                self.sound.dot_sound()
+                self.window.after(self.sound.space_between_morse_code)
+            elif char == "-":
+                self.sound.line_sound()
+                self.window.after(self.sound.space_between_morse_code)
+            elif char == " ":
+                self.window.after(self.sound.space_between_chars - self.sound.space_between_morse_code)
+            elif char == "/":
+                self.window.after(self.sound.space_between_morse_code - 2 * (
+                        self.sound.space_between_chars - self.sound.space_between_morse_code))
