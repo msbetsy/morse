@@ -139,32 +139,38 @@ class MorseInterface:
         options = ""
         unknown_char = False
         unknown_char_list = []
-        for char in text:
+
+        for char in text[:-1]:
             possible_letters = "["
             count = 0
+
             if char != " ":
                 letter += char
             elif char == "/":
                 message += " "
             else:
-                for key, value in characters_in_morse.items():
-                    if letter == value:
-                        possible_letters += key + ","
-                        count += 1
-                    else:
-                        unknown_char = True
-                        unknown_char_list.append(letter)
+
+                if letter in characters_in_morse.values():
+                    for key, value in characters_in_morse.items():
+                        if letter == value:
+                            possible_letters += key + ","
+                            count += 1
+                else:
+                    unknown_char = True
+                    unknown_char_list.append(letter)
                 if count == 1:
                     message += possible_letters[1:-1]
                 elif count > 1:
                     message += possible_letters[:-1] + "]"
                     options += possible_letters[:-1] + "]"
                     many_options = True
-
                 letter = ""
+
         unknown_char_list = list(set(unknown_char_list))
+
         if many_options:
             messagebox.showwarning(title="!", message="☛ " + str(options))
+
         if unknown_char:
             messagebox.showwarning(title="Error", message="Error ☛ " + str(unknown_char_list))
             self.output.insert(END, "ERROR " + str(unknown_char_list))
@@ -175,12 +181,14 @@ class MorseInterface:
         unknown_char = False
         unknown_char_list = []
         self.text_in_morse = ""
+
         for character in text:
             try:
                 self.text_in_morse += characters_in_morse[character] + " "
             except KeyError:
                 unknown_char = True
                 unknown_char_list.append(character)
+
         if unknown_char:
             unknown_char_list = list(set(unknown_char_list))
             messagebox.showwarning(title="Error", message="Error ☛ " + str(unknown_char_list))
@@ -202,6 +210,7 @@ class MorseInterface:
         text = self.output.get("1.0", END)
         files = [('Text Document', '*.txt')]
         morse_file = asksaveasfile(title=self.language.save_in_direction, filetypes=files, defaultextension=files)
+
         if morse_file is not None:
             morse_file.write(text)
             morse_file.close()
@@ -213,6 +222,7 @@ class MorseInterface:
         if text_file is not None:
             text_inside = text_file.read()
             text_file.close()
+
         self.input_entry.insert("1.0", text_inside)
 
     def change_program_language(self):
@@ -247,7 +257,9 @@ class MorseInterface:
         freq = self.frequency_scale.get()
         self.sound.frequency = freq
         text = self.output.get("1.0", END)
+
         for char in text:
+
             if char == ".":
                 self.sound.dot_sound()
                 self.window.after(self.sound.space_between_morse_code)
@@ -259,4 +271,5 @@ class MorseInterface:
             elif char == "/":
                 self.window.after(self.sound.space_between_morse_code - 2 * (
                         self.sound.space_between_chars - self.sound.space_between_morse_code))
+                
         self.sound.duration = normal_speed
