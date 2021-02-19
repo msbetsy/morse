@@ -91,8 +91,8 @@ class MorseInterface:
         self.delete_button.place(x=750, y=470)
 
         self.play_button = Button(self.window, text="play", font=('verdana', 15),
-                                  justify='center', width=10, command=self.morse_text_to_sound)
-        self.play_button.place(x=460, y=560)
+                                  justify='center', width=10, command=self.play_morse_sound)
+        self.play_button.place(x=300, y=560)
 
         self.frequency_label = Label(self.window, text="Frequency", fg=BG_ENTRY_COLOUR,
                                      justify='left', bg=BG_COLOUR, font=('verdana', 12, 'bold'))
@@ -104,19 +104,12 @@ class MorseInterface:
         self.frequency_scale.place(x=110, y=560)
         self.frequency_scale.set(self.sound.frequency)
 
-        self.speed_label = Label(self.window, text="Speed", fg=BG_ENTRY_COLOUR,
-                                 justify='left', bg=BG_COLOUR, font=('verdana', 12, 'bold'))
-        self.speed_label.place(x=300, y=530)
-
-        self.speed_scale = Scale(self.window, orient="horizontal", bg=FG_COLOUR, from_=0.5,
-                                 to=2, resolution=0.5, sliderlength=20, length=100,
-                                 fg=BG_ENTRY_COLOUR, font=('verdana', 10, 'bold'))
-        self.speed_scale.set(1.0)
-        self.speed_scale.place(x=300, y=560)
-
         self.stop_button = Button(self.window, text="stop", font=('verdana', 15),
-                                  justify='center', width=10)
-        self.stop_button.place(x=630, y=560)
+                                  justify='center', width=10, command=self.stop_playing)
+        self.stop_button.place(x=460, y=560)
+        self.save_sound_button = Button(self.window, text="save sound", font=('verdana', 15),
+                                        justify='center', width=10, command=self.save_morse_sound)
+        self.save_sound_button.place(x=630, y=560)
 
         self.window.mainloop()
 
@@ -140,7 +133,7 @@ class MorseInterface:
         unknown_char = False
         unknown_char_list = []
 
-        for char in text[:-1]:
+        for char in text:
             possible_letters = "["
             count = 0
 
@@ -148,7 +141,7 @@ class MorseInterface:
                 letter += char
             elif char == "/":
                 message += " "
-            else:
+            elif letter != "":
 
                 if letter in characters_in_morse.values():
                     for key, value in characters_in_morse.items():
@@ -251,25 +244,30 @@ class MorseInterface:
         self.change_program_language()
 
     def morse_text_to_sound(self):
-        sound_speed = self.speed_scale.get()
-        normal_speed = self.sound.duration
-        self.sound.duration = int(self.sound.duration // sound_speed)
         freq = self.frequency_scale.get()
         self.sound.frequency = freq
         text = self.output.get("1.0", END)
+        text = text.replace("\n", " ")
+        text = text.rstrip()
+        if text[-1] == "/":
+            text += " "
+        sound_array = self.sound.sound_array(text[0])
+        for char in text[1:]:
+            array_for_character = self.sound.sound_array(char)
+            sound_array = self.sound.concatenate_sounds(sound_array, array_for_character)
+        return sound_array
 
-        for char in text:
+    def play_morse_sound(self):
+        self.sound.convert(self.morse_text_to_sound())
+        self.sound.play()
 
-            if char == ".":
-                self.sound.dot_sound()
-                self.window.after(self.sound.space_between_morse_code)
-            elif char == "-":
-                self.sound.line_sound()
-                self.window.after(self.sound.space_between_morse_code)
-            elif char == " ":
-                self.window.after(self.sound.space_between_chars - self.sound.space_between_morse_code)
-            elif char == "/":
-                self.window.after(self.sound.space_between_morse_code - 2 * (
-                        self.sound.space_between_chars - self.sound.space_between_morse_code))
-                
-        self.sound.duration = normal_speed
+    def save_morse_sound(self):
+        files = [('Sound', '*.wav')]
+        morse_file = asksaveasfile(title="Save sound as", filetypes=files, defaultextension=files)
+        if morse_file is not None:
+            self.sound.convert(self.morse_text_to_sound())
+            self.sound.save(morse_file.name)
+            morse_file.close()
+
+    def stop_playing(self):
+        self.sound.playing_object.stop()
