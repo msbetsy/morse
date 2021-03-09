@@ -1,3 +1,4 @@
+"""This module contains the Morse Code and the translations of the language versions of the program."""
 characters_in_morse = {
     "a": ".-",
     "b": "-...",
@@ -86,6 +87,14 @@ languages_words = {
         'convert': 'Translate',
         'copy_text': 'Copy',
         'save': 'Save',
+        'delete': 'Delete',
+        'frequency': 'Frequency',
+        'start': 'Play',
+        'stop': 'Stop',
+        'translator': 'Translator...',
+        'from_language': 'From Morse',
+        'to_language': 'To Morse',
+        'save_sound': 'Save the sound',
         'save_in_direction': 'Save as',
         'load_from_direction': 'Open file'
     },
@@ -97,6 +106,14 @@ languages_words = {
         'convert': 'Przetłumacz',
         'copy_text': 'Kopiuj',
         'save': 'Zapisz',
+        'delete': 'Usuń',
+        'frequency': 'Częstotliwość',
+        'start': 'Odtwórz',
+        'stop': 'Zatrzymaj',
+        'translator': 'Translator...',
+        'from_language': 'Z Morse\'a',
+        'to_language': 'Na Morse\'a',
+        'save_sound': 'Zapisz dźwięk',
         'save_in_direction': 'Zapisz jako',
         'load_from_direction': 'Otwieranie'
 
@@ -109,6 +126,14 @@ languages_words = {
         'convert': 'Traduire ',
         'copy_text': 'Copier',
         'save': 'Enregistrer ',
+        'delete': 'Supprimer',
+        'frequency': 'La fréquence',
+        'start': 'Relire',
+        'stop': 'Fin',
+        'translator': 'Traducteur...',
+        'from_language': 'Source Morse',
+        'to_language': 'Cible Morse',
+        'save_sound': 'Enregistrer le son',
         'save_in_direction': 'Enregistrer sous',
         'load_from_direction': 'Ouvrir un fichier'
 
@@ -116,11 +141,19 @@ languages_words = {
     'GER': {
         'title': 'Morse-Code Übersetzer',
         'your_text': 'Dein \ntext',
-        'morse_message': "Morse \ncode",
+        'morse_message': "Deine \nNachricht",
         'load_file': 'Öffnen',
         'convert': 'Übersetzen',
         'copy_text': 'Kopieren',
         'save': 'Speichern',
+        'delete': 'Löschen',
+        'frequency': 'Frequenz',
+        'start': 'Wiedergeben',
+        'stop': 'Beenden',
+        'translator': 'Übersetzen...',
+        'from_language': 'Von Morse',
+        'to_language': 'Nach Morse',
+        'save_sound': 'Speichern sie den ton',
         'save_in_direction': 'Speichern unter',
         'load_from_direction': 'Öffnen'
 
