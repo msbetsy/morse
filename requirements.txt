@@ -1,0 +1,5 @@
+numpy==1.20.1
+Pillow==8.1.0
+pytest==6.2.2
+simpleaudio==1.0.4
+wavio==0.0.4
