@@ -1,35 +1,47 @@
+"""The module allows to handle Morse code translation via the graphical interface."""
 from tkinter import *
 from tkinter import messagebox
 from tkinter.filedialog import asksaveasfile, askopenfile
-from data import characters_in_morse
-from languages import LanguageManager
+
 from PIL import Image, ImageTk
+
+from data import languages_words
+from languages import LanguageManager
 from sound import SoundManager
+from conversion import ConversionManager
 
 BG_COLOUR = "#0F3057"
 FG_COLOUR = "#008891"
 BG_ENTRY_COLOUR = "#E7E7DE"
-WIDTH_FLAG = 30
-HEIGHT_FLAG = 20
+WIDTH_FLAG = 30  # width of the flag in the corner of application
+HEIGHT_FLAG = 20  # height of the flag in the corner of application
 
 
 class MorseInterface:
-    def __init__(self):
+    """This class allows to handle the operations via graphical interface. Those operations can be such as: translation
+     messages from and to Morse code and save the messages, it allows to listen, stop listening and save audio Morse
+     file with different frequencies.
+    """
 
+    def __init__(self):
+        """Constructor method."""
         self.language = LanguageManager()
         self.sound = SoundManager()
-
         self.window = Tk()
+        self.conversion = ConversionManager()
+
         self.window.title("Fun with Morse")
         self.window.geometry("1000x700")
         self.window.config(padx=40, pady=20, bg=BG_COLOUR)
         self.language_to = StringVar(self.window)
-        self.language_to.set("Choose option")
-        options_list = ["To Morse", "From Morse"]
-        self.options_menu = OptionMenu(self.window, self.language_to, *options_list)
+        self.language_to.set(self.language.translator)
+        self.options_list = [self.language.to_language, self.language.from_language]
+        self.options_menu = OptionMenu(self.window, self.language_to, *self.options_list)
         self.options_menu.config(width=16)
         self.options_menu.place(x=750, y=215)
+        self.translated_text = None
 
+        # Add flags.
         img_en = Image.open("./images/united_kingdom.png").resize((WIDTH_FLAG, HEIGHT_FLAG))
         img_pl = Image.open("./images/poland.png").resize((WIDTH_FLAG, HEIGHT_FLAG))
         img_fre = Image.open("./images/france.png").resize((WIDTH_FLAG, HEIGHT_FLAG))
@@ -39,6 +51,7 @@ class MorseInterface:
         france_flag = ImageTk.PhotoImage(img_fre)
         germany_flag = ImageTk.PhotoImage(img_ger)
 
+        # Add buttons.
         self.button_en = Button(self.window, image=england_flag, highlightthickness=0, command=self.change_to_en)
         self.button_en.place(x=780, y=0)
 
@@ -83,142 +96,88 @@ class MorseInterface:
         self.copy_button.place(x=750, y=350)
 
         self.save_button = Button(self.window, text=self.language.save, font=('verdana', 15),
-                                  justify='center', width=10, command=self.save_text_in_morse)
+                                  justify='center', width=10, command=self.save_text)
         self.save_button.place(x=750, y=410)
 
-        self.delete_button = Button(self.window, text="Delete", font=('verdana', 15),
+        self.delete_button = Button(self.window, text=self.language.delete, font=('verdana', 15),
                                     justify='center', width=10, command=self.delete_text)
         self.delete_button.place(x=750, y=470)
 
-        self.play_button = Button(self.window, text="play", font=('verdana', 15),
+        self.play_button = Button(self.window, text=self.language.start, font=('verdana', 15),
                                   justify='center', width=10, command=self.play_morse_sound)
-        self.play_button.place(x=300, y=560)
 
-        self.frequency_label = Label(self.window, text="Frequency", fg=BG_ENTRY_COLOUR,
+        self.frequency_label = Label(self.window, text=self.language.frequency, fg=BG_ENTRY_COLOUR,
                                      justify='left', bg=BG_COLOUR, font=('verdana', 12, 'bold'))
-        self.frequency_label.place(x=110, y=530)
 
         self.frequency_scale = Scale(self.window, orient="horizontal", bg=FG_COLOUR, from_=400,
                                      to=900, resolution=50, sliderlength=20, length=150,
                                      fg=BG_ENTRY_COLOUR, font=('verdana', 10, 'bold'))
-        self.frequency_scale.place(x=110, y=560)
+
         self.frequency_scale.set(self.sound.frequency)
 
-        self.stop_button = Button(self.window, text="stop", font=('verdana', 15),
+        self.stop_button = Button(self.window, text=self.language.stop, font=('verdana', 15),
                                   justify='center', width=10, command=self.stop_playing)
-        self.stop_button.place(x=460, y=560)
-        self.save_sound_button = Button(self.window, text="save sound", font=('verdana', 15),
-                                        justify='center', width=10, command=self.save_morse_sound)
-        self.save_sound_button.place(x=630, y=560)
+
+        self.save_sound_button = Button(self.window, text=self.language.save_sound, font=('verdana', 15),
+                                        justify='center', width=20, command=self.save_morse_sound)
 
         self.window.mainloop()
 
     def convert(self):
+        """This method is used to program the action of the button responsible for choosing the translation of the text
+        from or to the Morse code.
+        """
         self.output.delete("1.0", END)
-        text = self.input_entry.get("1.0", END).lower()
+        text = self.input_entry.get("1.0", END)
         text = text.replace("\n", " ")
-        if self.language_to.get() == "Choose option":
-            messagebox.showwarning(title="Error", message="Choose language option")
-        elif self.language_to.get() == "To Morse":
-            self.convert_text_to_morse(text)
-        elif self.language_to.get() == "From Morse":
-            self.convert_morse_to_text(text)
-
-    def convert_morse_to_text(self, text):
-        self.converted_text = ""
-        message = ""
-        letter = ""
-        many_options = False
-        options = ""
-        unknown_char = False
-        unknown_char_list = []
-
-        for char in text:
-            possible_letters = "["
-            count = 0
-
-            if char != " ":
-                letter += char
-            elif char == "/":
-                message += " "
-            elif letter != "":
-
-                if letter in characters_in_morse.values():
-                    for key, value in characters_in_morse.items():
-                        if letter == value:
-                            possible_letters += key + ","
-                            count += 1
-                else:
-                    unknown_char = True
-                    unknown_char_list.append(letter)
-                if count == 1:
-                    message += possible_letters[1:-1]
-                elif count > 1:
-                    message += possible_letters[:-1] + "]"
-                    options += possible_letters[:-1] + "]"
-                    many_options = True
-                letter = ""
-
-        unknown_char_list = list(set(unknown_char_list))
-
-        if many_options:
-            messagebox.showwarning(title="!", message="☛ " + str(options))
-
-        if unknown_char:
-            messagebox.showwarning(title="Error", message="Error ☛ " + str(unknown_char_list))
-            self.output.insert(END, "ERROR " + str(unknown_char_list))
-        else:
-            self.output.insert(END, message)
-
-    def convert_text_to_morse(self, text):
-        unknown_char = False
-        unknown_char_list = []
-        self.text_in_morse = ""
-
-        for character in text:
-            try:
-                self.text_in_morse += characters_in_morse[character] + " "
-            except KeyError:
-                unknown_char = True
-                unknown_char_list.append(character)
-
-        if unknown_char:
-            unknown_char_list = list(set(unknown_char_list))
-            messagebox.showwarning(title="Error", message="Error ☛ " + str(unknown_char_list))
-            self.output.insert(END, "ERROR " + str(unknown_char_list))
-        else:
-            self.text_in_morse = self.text_in_morse[:-2]
-            self.output.insert(END, self.text_in_morse)
+        if self.language_to.get() in list(languages_words[item]["translator"] for item in list(languages_words.keys())):
+            messagebox.showwarning(title="Error", message=self.language.translator)
+        elif self.language_to.get() in list(
+                languages_words[item]["to_language"] for item in list(languages_words.keys())):
+            self.show_widgets()
+            self.translated_text = self.conversion.convert_text_to_morse(text[:-1])
+            self.output.insert(END, self.translated_text)
+        elif self.language_to.get() in list(
+                languages_words[item]["from_language"] for item in list(languages_words.keys())):
+            self.hide_widgets()
+            self.translated_text = self.conversion.convert_morse_to_text(text)
+            self.output.insert(END, self.translated_text)
 
     def delete_text(self):
-        self.language_to.set('Choose option')
+        """Delete your text and Morse code from fields when the delete_button is clicked."""
+        self.hide_widgets()
+        self.language_to.set(self.language.translator)
         self.output.delete("1.0", END)
         self.input_entry.delete("1.0", END)
 
     def copy_text_to_clipboard(self):
+        """Copy converted text to clipboard when the copy_button is clicked."""
         self.window.clipboard_clear()
-        self.window.clipboard_append(self.text_in_morse)
+        self.window.clipboard_append(self.transalted_text)
 
-    def save_text_in_morse(self):
+    def save_text(self):
+        """Save converted text to the computer when the save_button is clicked."""
         text = self.output.get("1.0", END)
-        files = [('Text Document', '*.txt')]
-        morse_file = asksaveasfile(title=self.language.save_in_direction, filetypes=files, defaultextension=files)
+        if text is not None:
+            files = [('Text Document', '*.txt')]
+            morse_file = asksaveasfile(title=self.language.save_in_direction, filetypes=files, defaultextension=files)
 
-        if morse_file is not None:
-            morse_file.write(text)
-            morse_file.close()
+            if morse_file is not None:
+                morse_file.write(text)
+                morse_file.close()
 
     def load_file(self):
+        """Load text for translation from the computer when the load_text_button is clicked."""
         files = [('Text Document', '*.txt')]
         text_file = askopenfile(mode='r', title=self.language.load_from_direction, filetypes=files,
                                 defaultextension=files)
         if text_file is not None:
             text_inside = text_file.read()
             text_file.close()
-
-        self.input_entry.insert("1.0", text_inside)
+            self.input_entry.insert("1.0", text_inside)
 
     def change_program_language(self):
+        """Change text version of the application when one of the flag buttons is clicked."""
         self.input_label.config(text=self.language.your_text)
         self.title_label.config(text=self.language.title)
         self.load_text_button.config(text=self.language.load_file)
@@ -226,48 +185,79 @@ class MorseInterface:
         self.output_label.config(text=self.language.morse_message)
         self.copy_button.config(text=self.language.copy_text)
         self.save_button.config(text=self.language.save)
+        self.delete_button.config(text=self.language.delete)
+        self.frequency_label.config(text=self.language.frequency)
+        self.play_button.config(text=self.language.start)
+        self.stop_button.config(text=self.language.stop)
+        self.save_sound_button.config(text=self.language.save_sound)
+        self.options_list = [self.language.to_language, self.language.from_language]
+        self.language_to.set(self.language.translator)
+        languages_menu = self.options_menu["menu"]
+        languages_menu.delete(0, END)
+        for string in self.options_list:
+            languages_menu.add_command(
+                label=string,
+                command=lambda value=string: self.language_to.set(value))
+        self.hide_widgets()
 
     def change_to_pl(self):
-        self.language.chosen_language('PL')
+        """Change text version of the application to Polish."""
+        self.language.change_language('PL')
         self.change_program_language()
 
     def change_to_en(self):
-        self.language.chosen_language('EN')
+        """Change text version of the application to English."""
+        self.language.change_language('EN')
         self.change_program_language()
 
     def change_to_fre(self):
-        self.language.chosen_language('FRE')
+        """Change text version of the application to French."""
+        self.language.change_language('FRE')
         self.change_program_language()
 
     def change_to_ger(self):
-        self.language.chosen_language('GER')
+        """Change text version of the application to German."""
+        self.language.change_language('GER')
         self.change_program_language()
 
-    def morse_text_to_sound(self):
+    def play_morse_sound(self):
+        """Play the audio Morse code when the play_button is clicked."""
         freq = self.frequency_scale.get()
         self.sound.frequency = freq
-        text = self.output.get("1.0", END)
-        text = text.replace("\n", " ")
-        text = text.rstrip()
-        if text[-1] == "/":
-            text += " "
-        sound_array = self.sound.sound_array(text[0])
-        for char in text[1:]:
-            array_for_character = self.sound.sound_array(char)
-            sound_array = self.sound.concatenate_sounds(sound_array, array_for_character)
-        return sound_array
-
-    def play_morse_sound(self):
-        self.sound.convert(self.morse_text_to_sound())
-        self.sound.play()
+        text_to_sound = self.output.get("1.0", END)
+        self.sound.convert(self.sound.morse_text_to_sound(text_to_sound))
+        self.sound.play_audio()
 
     def save_morse_sound(self):
+        """Save the audio Morse code to audio file to the computer when the save_sound_button is clicked."""
         files = [('Sound', '*.wav')]
-        morse_file = asksaveasfile(title="Save sound as", filetypes=files, defaultextension=files)
+        morse_file = asksaveasfile(title=self.language.save_sound, filetypes=files, defaultextension=files)
         if morse_file is not None:
-            self.sound.convert(self.morse_text_to_sound())
+            freq = self.frequency_scale.get()
+            self.sound.frequency = freq
+            text_to_sound = self.output.get("1.0", END)
+            self.sound.convert(self.sound.morse_text_to_sound(text_to_sound))
             self.sound.save(morse_file.name)
             morse_file.close()
 
     def stop_playing(self):
+        """Stop audio Morse code playback when the stop_button is clicked."""
         self.sound.playing_object.stop()
+
+    def show_widgets(self):
+        """Show widgets supporting audio Morse code."""
+        self.play_button.place(x=300, y=560)
+        self.frequency_label.place(x=110, y=530)
+        self.frequency_scale.place(x=110, y=560)
+        self.frequency_scale.set(self.sound.frequency)
+        self.stop_button.place(x=460, y=560)
+        self.save_sound_button.place(x=630, y=560)
+
+    def hide_widgets(self):
+        """Hide widgets supporting audio Morse code."""
+        self.play_button.place_forget()
+        self.frequency_label.place_forget()
+        self.frequency_scale.place_forget()
+        self.frequency_scale.place_forget()
+        self.stop_button.place_forget()
+        self.save_sound_button.place_forget()

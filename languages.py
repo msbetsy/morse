@@ -34,6 +34,7 @@ class LanguageManager:
 
     def change_language(self, new_language):
         """Change language version of program.
+
         :param new_language: Selected language of the language version of the program.
         :type new_language: str
         """
