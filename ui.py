@@ -33,6 +33,7 @@ class MorseInterface:
         self.window.title("Fun with Morse")
         self.window.geometry("1000x700")
         self.window.config(padx=40, pady=20, bg=BG_COLOUR)
+        self.window.iconbitmap('./images/morse_icon.ico')
         self.language_to = StringVar(self.window)
         self.language_to.set(self.language.translator)
         self.options_list = [self.language.to_language, self.language.from_language]
@@ -198,7 +199,6 @@ class MorseInterface:
             languages_menu.add_command(
                 label=string,
                 command=lambda value=string: self.language_to.set(value))
-        self.hide_widgets()
 
     def change_to_pl(self):
         """Change text version of the application to Polish."""
