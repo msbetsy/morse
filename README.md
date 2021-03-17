@@ -7,8 +7,6 @@ GUI app created with Python. It allows for a translation using Morse code and pl
 * [Usage](#usage)
 * [Setup](#setup)
 * [Technologies](#technologies)
-* [License](#license)
-
 
 ## General info
 
@@ -60,5 +58,3 @@ Project is created with:
 * wavio library version: 0.0.4
 * pytest library version: 6.2.2
  
- ## License
- This project is licensed under the terms of the MIT license.
