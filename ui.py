@@ -32,6 +32,7 @@ class MorseInterface:
 
         self.window.title("Fun with Morse")
         self.window.geometry("1000x700")
+        self.window.resizable(False, False)
         self.window.config(padx=40, pady=20, bg=BG_COLOUR)
         self.window.iconbitmap('./images/morse_icon.ico')
         self.language_to = StringVar(self.window)
