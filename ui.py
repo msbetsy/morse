@@ -1,6 +1,6 @@
 """The module allows to handle Morse code translation via the graphical interface."""
 from tkinter import *
-from tkinter import messagebox
+from tkinter import messagebox, scrolledtext
 from tkinter.filedialog import asksaveasfile, askopenfile
 
 from PIL import Image, ImageTk
@@ -54,16 +54,20 @@ class MorseInterface:
         germany_flag = ImageTk.PhotoImage(img_ger)
 
         # Add buttons.
-        self.button_en = Button(self.window, image=england_flag, highlightthickness=0, command=self.change_to_en)
+        self.button_en = Button(self.window, image=england_flag, highlightthickness=0,
+                                command=lambda: self.change_program_language('EN'))
         self.button_en.place(x=780, y=0)
 
-        self.button_pl = Button(self.window, image=poland_flag, highlightthickness=0, command=self.change_to_pl)
+        self.button_pl = Button(self.window, image=poland_flag, highlightthickness=0,
+                                command=lambda: self.change_program_language('PL'))
         self.button_pl.place(x=820, y=0)
 
-        self.button_fre = Button(self.window, image=france_flag, highlightthickness=0, command=self.change_to_fre)
+        self.button_fre = Button(self.window, image=france_flag, highlightthickness=0,
+                                 command=lambda: self.change_program_language('FRE'))
         self.button_fre.place(x=860, y=0)
 
-        self.button_ger = Button(self.window, image=germany_flag, highlightthickness=0, command=self.change_to_ger)
+        self.button_ger = Button(self.window, image=germany_flag, highlightthickness=0,
+                                 command=lambda: self.change_program_language('GER'))
         self.button_ger.place(x=900, y=0)
 
         self.title_label = Label(self.window, text=self.language.title, bg=BG_COLOUR, fg=FG_COLOUR,
@@ -74,8 +78,10 @@ class MorseInterface:
                                  justify='left', bg=BG_COLOUR, font=('verdana', 12, 'bold'))
         self.input_label.place(x=0, y=190)
 
-        self.input_entry = Text(self.window, font=('verdana', 12), height=10, width=60, bg=BG_ENTRY_COLOUR,
-                                cursor="pencil")
+        self.input_entry = scrolledtext.ScrolledText(self.window, font=('verdana', 12), height=10, width=60,
+                                                     bg=BG_ENTRY_COLOUR,
+                                                     cursor="pencil", wrap=WORD)
+        self.input_entry.focus()
         self.input_entry.place(x=110, y=130)
 
         self.load_text_button = Button(self.window, text=self.language.load_file, font=('verdana', 15),
@@ -90,7 +96,8 @@ class MorseInterface:
                                   justify='left', bg=BG_COLOUR, font=('verdana', 12, 'bold'))
         self.output_label.place(x=0, y=390)
 
-        self.output = Text(self.window, font=('verdana', 12), height=10, width=60, bg=BG_ENTRY_COLOUR)
+        self.output = scrolledtext.ScrolledText(self.window, font=('verdana', 12), height=10, width=60,
+                                                bg=BG_ENTRY_COLOUR, wrap=WORD, state='disabled')
         self.output.place(x=110, y=330)
 
         self.copy_button = Button(self.window, text=self.language.copy_text, font=('verdana', 15),
@@ -129,6 +136,7 @@ class MorseInterface:
         """This method is used to program the action of the button responsible for choosing the translation of the text
         from or to the Morse code.
         """
+        self.output.configure(state='normal')
         self.output.delete("1.0", END)
         text = self.input_entry.get("1.0", END)
         text = text.replace("\n", " ")
@@ -139,23 +147,28 @@ class MorseInterface:
             self.show_widgets()
             self.translated_text = self.conversion.convert_text_to_morse(text[:-1])
             self.output.insert(END, self.translated_text)
+            self.output.configure(state='disabled')
         elif self.language_to.get() in list(
                 languages_words[item]["from_language"] for item in list(languages_words.keys())):
             self.hide_widgets()
             self.translated_text = self.conversion.convert_morse_to_text(text)
             self.output.insert(END, self.translated_text)
+            self.output.configure(state='disabled')
 
     def delete_text(self):
         """Delete your text and Morse code from fields when the delete_button is clicked."""
+        self.output.configure(state='normal')
         self.hide_widgets()
         self.language_to.set(self.language.translator)
         self.output.delete("1.0", END)
         self.input_entry.delete("1.0", END)
+        self.input_entry.focus()
+        self.output.configure(state='disabled')
 
     def copy_text_to_clipboard(self):
         """Copy converted text to clipboard when the copy_button is clicked."""
         self.window.clipboard_clear()
-        self.window.clipboard_append(self.transalted_text)
+        self.window.clipboard_append(self.translated_text)
 
     def save_text(self):
         """Save converted text to the computer when the save_button is clicked."""
@@ -178,8 +191,9 @@ class MorseInterface:
             text_file.close()
             self.input_entry.insert("1.0", text_inside)
 
-    def change_program_language(self):
+    def change_program_language(self, program_language):
         """Change text version of the application when one of the flag buttons is clicked."""
+        self.language.change_language(program_language)
         self.input_label.config(text=self.language.your_text)
         self.title_label.config(text=self.language.title)
         self.load_text_button.config(text=self.language.load_file)
@@ -200,26 +214,6 @@ class MorseInterface:
             languages_menu.add_command(
                 label=string,
                 command=lambda value=string: self.language_to.set(value))
-
-    def change_to_pl(self):
-        """Change text version of the application to Polish."""
-        self.language.change_language('PL')
-        self.change_program_language()
-
-    def change_to_en(self):
-        """Change text version of the application to English."""
-        self.language.change_language('EN')
-        self.change_program_language()
-
-    def change_to_fre(self):
-        """Change text version of the application to French."""
-        self.language.change_language('FRE')
-        self.change_program_language()
-
-    def change_to_ger(self):
-        """Change text version of the application to German."""
-        self.language.change_language('GER')
-        self.change_program_language()
 
     def play_morse_sound(self):
         """Play the audio Morse code when the play_button is clicked."""
